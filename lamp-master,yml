@@ -1,0 +1,25 @@
+---
+- name: deploy lamp stack
+  hosts: all
+  become: true
+  tasks:
+    - name: Copy bash script to Slave node
+      ansible.builtin.copy:
+        src: /home/vagrant/lamp_master.sh
+        dest: /home/vagrant/lamp_master.sh
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Execute bash script on Slave node
+      script: /home/vagrant/lamp_master.sh
+
+    - name: Run Bash Script
+      command: bash lamp_master.sh
+
+    - name: set cron job to check uptime of the server every 12am
+      cron:
+        name: Check Uptime
+        minute: "0"
+        hour: "0"
+        job: /usr/bin/uptime >> /var/log/uptime.log 2>&1
